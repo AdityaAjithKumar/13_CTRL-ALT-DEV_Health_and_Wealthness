@@ -20,3 +20,14 @@ The app automatically retrieves and displays the patient’s critical medical de
 In cases where the AI cannot confidently determine the best course of action, the app automatically identifies and contacts a suitable nearby doctor, ensuring professional assistance is on the way. 
 
 This dynamic system works to keep the patient safe and comfortable until first responders or medical professionals arrive.
+
+---
+![Custom CSV](https://github.com/AdityaAjithKumar/13_CTRL-ALT-DEV_Health_and_Wealthness/blob/main/CustomCSV.png)
+
+
+The Above is the Custom data set which we used to Supervised FineTuned Model ie **Gemma 3B**.
+
+![Custom Gemma Model prediciting](https://github.com/AdityaAjithKumar/13_CTRL-ALT-DEV_Health_and_Wealthness/blob/main/ollama.png)
+
+here you can see our custom gemma making prediction 
+
