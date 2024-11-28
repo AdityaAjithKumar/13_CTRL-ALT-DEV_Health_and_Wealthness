@@ -27,6 +27,12 @@ This dynamic system works to keep the patient safe and comfortable until first r
 
 The Above is the Custom data set which we used to Supervised FineTuned Model ie **Gemma 3B**.
 
+
+when the tag is tapped on the mobile device , the user is redirect to our paitent essentials page where the responder can get details about his history and other stuff as shown below 
+
+![Info](https://github.com/AdityaAjithKumar/13_CTRL-ALT-DEV_Health_and_Wealthness/blob/main/Patient%20Info.png)
+---
+
 ![Custom Gemma Model prediciting](https://github.com/AdityaAjithKumar/13_CTRL-ALT-DEV_Health_and_Wealthness/blob/main/ollama.png)
 
 here you can see our custom gemma making prediction 
