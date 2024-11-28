@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <div class="container mx-auto px-4 py-8 max-w-2xl flex-grow">
+        <div class="bg-white shadow-xl rounded-2xl p-6 md:p-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-6">
+                AI Voice Companion
+            </h1>
+
+            <div class="mb-6 text-center">
+                <p id="status" class="text-gray-600 min-h-[1.5rem]">
+                    Click "Start Recording" to begin your conversation
+                </p>
+            </div>
+
+            <div class="flex flex-col space-y-4">
+                <!-- Recording Controls -->
+                <div class="flex justify-center space-x-4">
+                    <button id="start-recording"
+                            class="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                        Start Recording
+                    </button>
+                    <button id="stop-recording"
+                            disabled
+                            class="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Stop Recording
+                    </button>
+                </div>
+
+                <!-- Hidden Audio Players -->
+                <audio id="audio-player" style="display:none;"></audio>
+                <audio id="tts-audio-player" style="display:none;"></audio>
+
+                <!-- Transcription Result -->
+                <div id="transcription-result" class="hidden animate-fade-in">
+                    <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                        <h2 class="text-lg font-semibold text-gray-700 mb-2">Transcription</h2>
+                        <p id="transcription-text" class="text-gray-800 mb-4"></p>
+
+                        <h2 class="text-lg font-semibold text-gray-700 mb-2">AI Response</h2>
+                        <p id="ai-response-text" class="text-gray-800 mb-4"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white py-4 mt-6">
+        <div class="container mx-auto text-center text-gray-600">
+            © 2024 AI Voice Companion
+        </div>
+    </footer>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let stream;
+
+        const startButton = document.getElementById("start-recording");
+        const stopButton = document.getElementById("stop-recording");
+        const statusText = document.getElementById("status");
+        const audioPlayer = document.getElementById("audio-player");
+        const ttsAudioPlayer = document.getElementById("tts-audio-player");
+        const transcriptionResult = document.getElementById("transcription-result");
+        const transcriptionText = document.getElementById("transcription-text");
+        const aiResponseText = document.getElementById("ai-response-text");
+
+        async function startRecording() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        channelCount: 1,
+                        sampleRate: 44100
+                    }
+                });
+
+                const mimeType = MediaRecorder.isTypeSupported('audio/wav')
+                    ? 'audio/wav'
+                    : 'audio/webm';
+
+                mediaRecorder = new MediaRecorder(stream, { mimeType });
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstart = () => {
+                    statusText.textContent = "Recording...";
+                    startButton.disabled = true;
+                    stopButton.disabled = false;
+                };
+
+                mediaRecorder.onstop = () => {
+                    stream.getTracks().forEach(track => track.stop());
+
+                    if (audioChunks.length === 0) {
+                        statusText.textContent = "No audio recorded. Please try again.";
+                        return;
+                    }
+
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                    const audioURL = URL.createObjectURL(audioBlob);
+
+                    audioPlayer.src = audioURL;
+                    statusText.textContent = "Recording stopped. Uploading...";
+                    uploadRecording(audioBlob);
+                };
+
+                mediaRecorder.start();
+            } catch (error) {
+                statusText.textContent = `Microphone access error: ${error.message}`;
+                console.error("Recording error:", error);
+            }
+        }
+
+        async function uploadRecording(audioBlob) {
+            const formData = new FormData();
+            formData.append("audio", audioBlob, `recording.${audioBlob.type.split('/')[1]}`);
+
+            statusText.textContent = "Uploading audio for transcription...";
+            try {
+                const response = await fetch("/transcribe", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    transcriptionText.textContent = result.transcription;
+                    aiResponseText.textContent = result.ai_response;
+                    transcriptionResult.style.display = "block";
+
+                    // Automatically play both audio files
+                    if (result.tts_audio) {
+                        ttsAudioPlayer.src = result.tts_audio;
+
+                        // Play original audio first
+                        audioPlayer.onended = () => {
+                            // Then play TTS audio
+                            ttsAudioPlayer.play();
+                        };
+                        audioPlayer.play();
+                    }
+
+                    statusText.textContent = "Transcription complete. Playing audio...";
+                } else {
+                    const error = await response.text();
+                    transcriptionText.textContent = `Server Error: ${error}`;
+                    transcriptionResult.style.display = "block";
+                    statusText.textContent = "Transcription failed.";
+                }
+            } catch (error) {
+                transcriptionText.textContent = `Error: ${error.message}`;
+                transcriptionResult.style.display = "block";
+                statusText.textContent = "Transcription failed.";
+                console.error("Upload error:", error);
+            }
+        }
+
+        startButton.addEventListener("click", startRecording);
+
+        stopButton.addEventListener("click", () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                stopButton.disabled = true;
+            } else {
+                statusText.textContent = "No active recording to stop.";
+            }
+        });
+
+        // Check browser support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            statusText.textContent = "Your browser does not support audio recording.";
+            startButton.disabled = true;
+        }
+    </script>
+</body>
+</html>
