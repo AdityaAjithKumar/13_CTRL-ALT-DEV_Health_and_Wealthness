@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Voice Assistant</title>
+    <title>AI Voice Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -15,41 +16,61 @@
                     },
                     keyframes: {
                         fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulse: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.05)' },
                         }
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out'
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'pulse-soft': 'pulse 2s ease-in-out infinite'
                     }
                 }
             }
         }
     </script>
+    <style>
+        .mic-icon {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex flex-col">
     <div class="container mx-auto px-4 py-8 max-w-2xl flex-grow">
-        <div class="bg-white shadow-xl rounded-2xl p-6 md:p-10">
-            <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-6">
-                AI Voice Companion
-            </h1>
+        <div class="bg-white/80 glass-morphism shadow-2xl rounded-3xl p-8 md:p-12 border border-white/20 transform transition-all hover:scale-[1.02]">
+            <div class="flex items-center justify-center mb-8">
+                <i class="fas fa-microphone-alt text-4xl text-blue-600 mr-4 mic-icon"></i>
+                <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                    AI Voice Companion
+                </h1>
+            </div>
 
-            <div class="mb-6 text-center">
-                <p id="status" class="text-gray-600 min-h-[1.5rem]">
-                    Click "Start Recording" to begin your conversation
+            <div class="mb-8 text-center">
+                <p id="status" class="text-lg text-gray-600 min-h-[2rem] italic">
+                    <i class="fas fa-info-circle mr-2"></i>Click "Start Recording" to begin your conversation
                 </p>
             </div>
 
-            <div class="flex flex-col space-y-4">
+            <div class="flex flex-col space-y-6">
                 <!-- Recording Controls -->
-                <div class="flex justify-center space-x-4">
+                <div class="flex justify-center space-x-6">
                     <button id="start-recording"
-                            class="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                            class="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-play mr-2"></i>
                         Start Recording
                     </button>
                     <button id="stop-recording"
                             disabled
-                            class="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-pink-600 text-white px-8 py-4 rounded-full hover:from-red-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-stop mr-2"></i>
                         Stop Recording
                     </button>
                 </div>
@@ -60,18 +81,30 @@
 
                 <!-- Transcription Result -->
                 <div id="transcription-result" class="hidden animate-fade-in">
-                    <div class="bg-gray-100 rounded-lg p-4 mb-4">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-2">Transcription</h2>
-                        <p id="transcription-text" class="text-gray-800 mb-4"></p>
+                    <div class="bg-white/60 glass-morphism rounded-2xl p-6 border border-white/20 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-comment-dots text-blue-600 mr-3 text-2xl"></i>
+                            <h2 class="text-xl font-semibold text-gray-800">Transcription</h2>
+                        </div>
+                        <p id="transcription-text" class="text-gray-700 mb-6 bg-gray-100 p-4 rounded-lg"></p>
 
-                        <h2 class="text-lg font-semibold text-gray-700 mb-2">AI Response</h2>
-                        <p id="ai-response-text" class="text-gray-800 mb-4"></p>
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-robot text-green-600 mr-3 text-2xl"></i>
+                            <h2 class="text-xl font-semibold text-gray-800">AI Response</h2>
+                        </div>
+                        <p id="ai-response-text" class="text-gray-700 bg-gray-100 p-4 rounded-lg"></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <footer class="bg-white/60 glass-morphism py-6 mt-6 border-t border-white/20">
+        <div class="container mx-auto text-center text-gray-600 flex items-center justify-center">
+            <i class="fas fa-heart text-red-500 mr-2"></i>
+            © 2024 AI Voice Companion
+            <i class="fas fa-heart text-red-500 ml-2"></i>
+        </div>
     <footer class="bg-white py-4 mt-6">
         <div class="container mx-auto text-center text-gray-600">
             © 2024 AI Voice Companion

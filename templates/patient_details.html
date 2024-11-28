@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Details</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f4f6f7;
+            --text-color: #2c3e50;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header h1 i {
+            font-size: 2.2rem;
+        }
+
+        .patient-section {
+            padding: 25px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .patient-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .patient-section h3 i {
+            color: var(--secondary-color);
+        }
+
+        .patient-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .list-section ul {
+            list-style-type: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .list-section li {
+            background-color: #f1f3f4;
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .list-section li i {
+            color: var(--secondary-color);
+        }
+
+        .emergency-contact {
+            background-color: #fff3cd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .patient-info, .list-section ul {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-user-md"></i> Patient Details</h1>
+        </div>
+
+        <div class="patient-section patient-info">
+            <div class="info-item">
+                <i class="fas fa-id-badge"></i>
+                <div>
+                    <strong>Patient ID:</strong>
+                    <span id="patient-id"></span>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-user"></i>
+                <div>
+                    <strong>Name:</strong>
+                    <span id="patient-name"></span>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-birthday-cake"></i>
+                <div>
+                    <strong>Age:</strong>
+                    <span id="patient-age"></span>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-tint"></i>
+                <div>
+                    <strong>Blood Type:</strong>
+                    <span id="patient-blood-type"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="patient-section list-section">
+            <h3><i class="fas fa-exclamation-triangle"></i> Allergies</h3>
+            <ul id="patient-allergies"></ul>
+        </div>
+
+        <div class="patient-section list-section">
+            <h3><i class="fas fa-notes-medical"></i> Diseases</h3>
+            <ul id="patient-diseases"></ul>
+        </div>
+
+        <div class="patient-section emergency-contact">
+            <h3><i class="fas fa-phone-alt"></i> Emergency Contact</h3>
+            <div class="info-item">
+                <i class="fas fa-user-friends"></i>
+                <div>
+                    <strong>Name:</strong>
+                    <span id="emergency-contact-name"></span>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-mobile-alt"></i>
+                <div>
+                    <strong>Phone:</strong>
+                    <span id="emergency-contact-phone"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="patient-section list-section">
+            <h3><i class="fas fa-pills"></i> Medications</h3>
+            <ul id="patient-medications"></ul>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="btn">Talk with AI</a>
+    </div>
+
+    <script>
+        // Use the Flask variable `tag_id` passed to the template
+        const tagId = {{ tag_id | tojson }}; // This line injects the `tag_id` from Flask into JavaScript
+
+        // Fetch the patient details from the Flask server
+        fetch(`/api/patient/${tagId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.body.innerHTML = `<h1>Error: ${data.error}</h1>`;
+                } else {
+                    // Populate the page with patient data
+                    document.getElementById('patient-id').textContent = data.id;
+                    document.getElementById('patient-name').textContent = data.name;
+                    document.getElementById('patient-age').textContent = data.age;
+                    document.getElementById('patient-blood-type').textContent = data.blood_type;
+
+                    const allergiesList = document.getElementById('patient-allergies');
+                    data.allergies.forEach(allergy => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<i class="fas fa-times-circle"></i>${allergy}`;
+                        allergiesList.appendChild(li);
+                    });
+
+                    const diseasesList = document.getElementById('patient-diseases');
+                    data.diseases.forEach(disease => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<i class="fas fa-viruses"></i>${disease}`;
+                        diseasesList.appendChild(li);
+                    });
+
+                    document.getElementById('emergency-contact-name').textContent = data.emergency_contact.Name;
+                    document.getElementById('emergency-contact-phone').textContent = data.emergency_contact.Phone;
+
+                    const medicationsList = document.getElementById('patient-medications');
+                    data.medications.forEach(medication => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<i class="fas fa-prescription-bottle-alt"></i>${medication}`;
+                        medicationsList.appendChild(li);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching patient details:', error);
+            });
+    </script>
+</body>
+</html>

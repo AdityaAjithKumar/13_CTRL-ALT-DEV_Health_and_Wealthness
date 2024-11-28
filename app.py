@@ -152,6 +152,48 @@ def sendai(text):
     print(response.text)
     return response.text
 
+def fetch_patient_details(tag_id):
+    """
+    Fetch patient details from MongoDB using the tag ID.
+
+    :param tag_id: The unique identifier for the patient
+    :return: Patient details dictionary or None if not found
+    """
+    try:
+        patient = patients_collection.find_one({"id": tag_id})
+        return patient
+    except Exception as e:
+        print(f"Error fetching patient details: {e}")
+        return None
+
+@app.route('/api/patient/<int:tag_id>', methods=['GET'])
+def get_patient_by_id(tag_id):
+    """
+    Fetch and return patient details by tag ID as JSON.
+    """
+    patient = fetch_patient_details(tag_id)
+
+    if patient:
+        return jsonify({
+            "id": patient.get("id"),
+            "name": patient.get("Name"),
+            "age": patient.get("Age"),
+            "blood_type": patient.get("Blood Type"),
+            "allergies": patient.get("Allergies", []),
+            "diseases": patient.get("Any Diseases", []),
+            "emergency_contact": patient.get("Emergency Contact", {}),
+            "medications": patient.get("Medication", []),
+        }), 200
+    else:
+        return jsonify({"error": "Patient not found"}), 404
+
+@app.route('/patient_details/<int:tag_id>', methods=['GET'])
+def patient_details(tag_id):
+    """
+    Serve the patient details page with dynamic data for the given patient ID.
+    """
+    return render_template('patient_details.html', tag_id=tag_id)
+
 
 
 if __name__ == '__main__':
