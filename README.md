@@ -31,3 +31,8 @@ The Above is the Custom data set which we used to Supervised FineTuned Model ie 
 
 here you can see our custom gemma making prediction 
 
+
+![Custom Gemma Model prediciting](https://github.com/AdityaAjithKumar/13_CTRL-ALT-DEV_Health_and_Wealthness/blob/main/UI.png)
+
+In above image you can see our Voice activated bot works 
+
